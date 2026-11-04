@@ -714,6 +714,12 @@ a {
   max-width: 350px;
   margin: 0 0 33px;
 }
+.project-edit-note {
+  color: #68666b;
+  font-size: 12px;
+  line-height: 1.5;
+  margin: 18px 0 0;
+}
 label {
   display: block;
   font-size: 13px;

@@ -200,14 +200,32 @@ function ProjectCard({ project, mine, onDelete }) {
   return (
     <article
       className={
-        "project-card " + (project.status === "pending" ? "pending" : "")
+        "project-card " +
+        (project.status === "pending" ? "pending" : "") +
+        (project.status === "rejected" ? " rejected" : "")
       }
     >
       <div className="card-art">
-        <span>{project.name.slice(0, 1)}</span>
-        <div className="card-scribble" />
+        {project.image_url ? (
+          <img
+            className="card-image"
+            src={project.image_url}
+            alt={project.name}
+          />
+        ) : (
+          <>
+            <span>{project.name.slice(0, 1)}</span>
+            <div className="card-scribble" />
+          </>
+        )}
       </div>
       {project.status === "pending" && <div className="review">In review</div>}
+      {project.status === "rejected" && (
+        <div className="review rejected-tag">
+          <span>Not approved</span>
+          <small>Check your email. 😢</small>
+        </div>
+      )}
       <div className="card-body">
         <div className="project-top">
           <p>BY {project.author_name}</p>
@@ -231,13 +249,62 @@ function ProjectCard({ project, mine, onDelete }) {
   );
 }
 function Projects() {
+  const { user } = useAuth();
   const [mine, setMine] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState(null);
-  const visible = mockProjects.filter((project) => {
-    const isMine = project.user_id === "current-user";
-    const isVisibleWhileInReview = project.status !== "pending" || isMine;
-    return isVisibleWhileInReview && (!mine || isMine);
+  const [projects, setProjects] = useState([]);
+
+  useEffect(() => {
+    supabase
+      .from("projects")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .then(({ data, error }) => {
+        if (error) {
+          console.error(error);
+          return;
+        }
+        setProjects(
+          data.map((p) => ({
+            id: p.id,
+            name: p.project_name,
+            author_name: p.creator_name,
+            description: p.description,
+            link: p.project_link,
+            image_url: p.image_url,
+            status: p.status,
+            user_id: p.user_id,
+          })),
+        );
+      });
+  }, [user]);
+  const deleteProject = async (project) => {
+    const { data, error } = await supabase
+      .from("projects")
+      .delete()
+      .eq("id", project.id)
+      .select();
+    if (error || !data || data.length === 0) {
+      console.error(error);
+      alert("Couldn't delete the project. Please try again.");
+      return;
+    }
+    if (project.image_url) {
+      const path = project.image_url.split("/project-images/")[1];
+      if (path) {
+        await supabase.storage.from("project-images").remove([path]);
+      }
+    }
+    setProjects((current) => current.filter((p) => p.id !== project.id));
+    setDeleteTarget(null);
+  };
+  const visible = projects.filter((project) => {
+    const isMine = !!user && project.user_id === user.id;
+    return !mine || isMine;
   });
+  const hasSubmittedProject = projects.some(
+    (project) => !!user && project.user_id === user.id,
+  );
   return (
     <main className="page projects-page">
       <div className="page-intro">
@@ -263,21 +330,28 @@ function Projects() {
           <ProjectCard
             key={p.id}
             project={p}
-            mine={p.user_id === "current-user"}
+            mine={!!user && p.user_id === user.id}
             onDelete={setDeleteTarget}
           />
         ))}
       </div>
+      {hasSubmittedProject && (
+        <p className="project-edit-note">
+          Want to edit a project? Submit another version for review and delete
+          your previous one.
+        </p>
+      )}
       {deleteTarget && (
         <DeleteModal
           project={deleteTarget}
           close={() => setDeleteTarget(null)}
+          onConfirm={() => deleteProject(deleteTarget)}
         />
       )}
     </main>
   );
 }
-function DeleteModal({ project, close }) {
+function DeleteModal({ project, close, onConfirm }) {
   return (
     <div className="modal-backdrop" onMouseDown={close}>
       <div className="modal" onMouseDown={(e) => e.stopPropagation()}>
@@ -295,7 +369,7 @@ function DeleteModal({ project, close }) {
           <button className="button ghost" onClick={close}>
             Cancel
           </button>
-          <button className="button danger" onClick={close}>
+          <button className="button danger" onClick={onConfirm}>
             Delete project
           </button>
         </div>
@@ -316,11 +390,31 @@ function NewProject() {
   });
   const submit = async (e) => {
     e.preventDefault();
+
+    let imageUrl = null;
+    if (form.image) {
+      const ext = form.image.name.split(".").pop().toLowerCase();
+      const path = `${user.id}/${Date.now()}.${ext}`;
+      const { error: uploadError } = await supabase.storage
+        .from("project-images")
+        .upload(path, form.image);
+      if (uploadError) {
+        console.error(uploadError);
+        alert("Image upload failed. Is it a PNG or JPG under 2 MB?");
+        return;
+      }
+      const { data } = supabase.storage
+        .from("project-images")
+        .getPublicUrl(path);
+      imageUrl = data.publicUrl;
+    }
+
     const { error } = await supabase.from("projects").insert({
       project_name: form.name,
       creator_name: form.author,
       description: form.description,
       project_link: form.link,
+      image_url: imageUrl,
     });
     if (error) {
       console.error(error);
@@ -424,6 +518,20 @@ function AuthPage({ login = false }) {
   const [emailInUse, setEmailInUse] = useState(false);
   const [authError, setAuthError] = useState("");
   const [signupNotice, setSignupNotice] = useState("");
+  const showAuthError = (error) => {
+    const message = error?.message || "Something went wrong. Please try again.";
+    const accountMissing =
+      login &&
+      (["user_not_found", "user_does_not_exist"].includes(error?.code) ||
+        /invalid login credentials|user (?:not found|does not exist)|account (?:not found|does not exist)/i.test(
+          message,
+        ));
+    setAuthError(
+      accountMissing
+        ? "This account does not yet exist, or the password is incorrect. Please sign up or check your password."
+        : message,
+    );
+  };
   const action = async (e) => {
     e.preventDefault();
     setEmailInUse(false);
@@ -435,7 +543,7 @@ function AuthPage({ login = false }) {
         ? await logIn(form.email, form.password)
         : await signUp(form.email, form.password);
     } catch (error) {
-      setAuthError(error?.message || "Something went wrong. Please try again.");
+      showAuthError(error);
       return;
     }
     const { data, error } = result;
@@ -448,7 +556,7 @@ function AuthPage({ login = false }) {
         setEmailInUse(true);
         return;
       }
-      setAuthError(error.message || "Something went wrong. Please try again.");
+      showAuthError(error);
       return;
     }
 
