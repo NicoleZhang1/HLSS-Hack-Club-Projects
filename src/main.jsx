@@ -11,22 +11,19 @@ import {
 import {
   ArrowDown,
   ArrowUpRight,
-  Github,
-  Link as LinkIcon,
   Menu,
   Plus,
-  Rocket,
-  Sparkles,
   Trash2,
   X,
 } from "lucide-react";
 import "./styles.css";
 import "./modern.css";
 import { supabase } from "./supabaseClient";
-import { mockProjects } from "./mockProjects";
 import trophyImg from "./assets/snoopy_trophy.jpg";
 import creativeImg from "./assets/snoopy_creative.jpg";
 import beginnerImg from "./assets/snoopy_beginner.jpg";
+
+/* ---------- Auth context ---------- */
 
 const AuthContext = createContext({
   user: null,
@@ -35,6 +32,8 @@ const AuthContext = createContext({
   logOut: () => {},
 });
 const useAuth = () => useContext(AuthContext);
+
+/* ---------- Layout ---------- */
 
 function Navbar() {
   const { user, logOut } = useAuth();
@@ -79,6 +78,34 @@ function Navbar() {
   );
 }
 
+function Footer() {
+  return (
+    <footer className="footer">
+      <Link className="brand" to="/">
+        <span className="brand-mark">H</span>
+        <span>HLSS HACKATHON</span>
+      </Link>
+      <p></p>
+      <span>2026</span>
+    </footer>
+  );
+}
+
+/* ---------- Landing page ---------- */
+
+function Prize({ number, title, amount, image, featured = false }) {
+  return (
+    <article className={featured ? "prize-card creative-prize" : "prize-card"}>
+      <span className="prize-num">{number}</span>
+      <div className="prize-icon">
+        <img src={image} alt={title} />
+      </div>
+      <h3>{title}</h3>
+      <p>{amount}</p>
+    </article>
+  );
+}
+
 function Landing() {
   return (
     <>
@@ -105,6 +132,7 @@ function Landing() {
           <ArrowDown size={18} />
         </a>
       </section>
+
       <section id="prizes" className="prizes">
         <div className="section-head">
           <h2>Prizes</h2>
@@ -125,6 +153,7 @@ function Landing() {
           />
         </div>
       </section>
+
       <section id="info" className="prizes info-section">
         <div className="section-head">
           <h2>Info</h2>
@@ -166,6 +195,7 @@ function Landing() {
           </p>
         </div>
       </section>
+
       <section className="final-cta">
         <div className="star">✳</div>
         <h2>
@@ -183,28 +213,17 @@ function Landing() {
     </>
   );
 }
-function Prize({ number, title, amount, image, featured = false }) {
-  return (
-    <article className={featured ? "prize-card creative-prize" : "prize-card"}>
-      <span className="prize-num">{number}</span>
-      <div className="prize-icon">
-        <img src={image} alt={title} />
-      </div>
-      <h3>{title}</h3>
-      <p>{amount}</p>
-    </article>
-  );
-}
+
+/* ---------- Projects page ---------- */
 
 function ProjectCard({ project, mine, onDelete }) {
+  const statusClass =
+    project.status === "pending" || project.status === "rejected"
+      ? project.status
+      : "";
+
   return (
-    <article
-      className={
-        "project-card " +
-        (project.status === "pending" ? "pending" : "") +
-        (project.status === "rejected" ? " rejected" : "")
-      }
-    >
+    <article className={`project-card ${statusClass}`.trim()}>
       <div className="card-art">
         {project.image_url ? (
           <img
@@ -219,6 +238,7 @@ function ProjectCard({ project, mine, onDelete }) {
           </>
         )}
       </div>
+
       {project.status === "pending" && <div className="review">In review</div>}
       {project.status === "rejected" && (
         <div className="review rejected-tag">
@@ -226,6 +246,7 @@ function ProjectCard({ project, mine, onDelete }) {
           <small>Check your email. 😢</small>
         </div>
       )}
+
       <div className="card-body">
         <div className="project-top">
           <p>BY {project.author_name}</p>
@@ -241,13 +262,46 @@ function ProjectCard({ project, mine, onDelete }) {
         </div>
         <h3>{project.name}</h3>
         <p className="description">{project.description}</p>
-        <a href={project.link} className="project-link" target="_blank">
+        <a
+          href={project.link}
+          className="project-link"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           View project <ArrowUpRight size={15} />
         </a>
       </div>
     </article>
   );
 }
+
+function DeleteModal({ project, close, onConfirm }) {
+  return (
+    <div className="modal-backdrop" onMouseDown={close}>
+      <div className="modal" onMouseDown={(e) => e.stopPropagation()}>
+        <button className="modal-close" onClick={close}>
+          <X size={20} />
+        </button>
+        <div className="danger-icon">
+          <Trash2 size={23} />
+        </div>
+        <h2>Delete this project?</h2>
+        <p>
+          <strong>{project.name}</strong> will be removed. This can’t be undone.
+        </p>
+        <div className="modal-actions">
+          <button className="button ghost" onClick={close}>
+            Cancel
+          </button>
+          <button className="button danger" onClick={onConfirm}>
+            Delete project
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function Projects() {
   const { user } = useAuth();
   const [mine, setMine] = useState(false);
@@ -278,6 +332,7 @@ function Projects() {
         );
       });
   }, [user]);
+
   const deleteProject = async (project) => {
     const { data, error } = await supabase
       .from("projects")
@@ -298,19 +353,18 @@ function Projects() {
     setProjects((current) => current.filter((p) => p.id !== project.id));
     setDeleteTarget(null);
   };
-  const visible = projects.filter((project) => {
-    const isMine = !!user && project.user_id === user.id;
-    return !mine || isMine;
-  });
-  const hasSubmittedProject = projects.some(
-    (project) => !!user && project.user_id === user.id,
-  );
+
+  const isMine = (project) => !!user && project.user_id === user.id;
+  const visible = projects.filter((project) => !mine || isMine(project));
+  const hasSubmittedProject = projects.some(isMine);
+
   return (
     <main className="page projects-page">
       <div className="page-intro">
         <h1>Projects!</h1>
         <p>Everything submitted thus far! ヽ(°〇°)ﾉ</p>
       </div>
+
       <div className="filter-row">
         <span>{visible.length} PROJECTS</span>
         <button
@@ -321,6 +375,7 @@ function Projects() {
           <span className="toggle-dot" /> My projects
         </button>
       </div>
+
       <div className="projects-grid">
         <Link to="/new" className="new-card">
           <Plus size={42} />
@@ -330,17 +385,19 @@ function Projects() {
           <ProjectCard
             key={p.id}
             project={p}
-            mine={!!user && p.user_id === user.id}
+            mine={isMine(p)}
             onDelete={setDeleteTarget}
           />
         ))}
       </div>
+
       {hasSubmittedProject && (
         <p className="project-edit-note">
           Want to edit a project? Submit another version for review and delete
           your previous one.
         </p>
       )}
+
       {deleteTarget && (
         <DeleteModal
           project={deleteTarget}
@@ -351,32 +408,8 @@ function Projects() {
     </main>
   );
 }
-function DeleteModal({ project, close, onConfirm }) {
-  return (
-    <div className="modal-backdrop" onMouseDown={close}>
-      <div className="modal" onMouseDown={(e) => e.stopPropagation()}>
-        <button className="modal-close" onClick={close}>
-          <X size={20} />
-        </button>
-        <div className="danger-icon">
-          <Trash2 size={23} />
-        </div>
-        <h2>Delete this project?</h2>
-        <p>
-          <strong>{project.name}</strong> will be removed. This can’t be undone.
-        </p>
-        <div className="modal-actions">
-          <button className="button ghost" onClick={close}>
-            Cancel
-          </button>
-          <button className="button danger" onClick={onConfirm}>
-            Delete project
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
+
+/* ---------- Submit project page ---------- */
 
 function NewProject() {
   const navigate = useNavigate();
@@ -388,6 +421,7 @@ function NewProject() {
     link: "",
     image: null,
   });
+
   const submit = async (e) => {
     e.preventDefault();
 
@@ -423,6 +457,7 @@ function NewProject() {
     }
     navigate("/projects");
   };
+
   if (!user) {
     return (
       <main className="form-page">
@@ -446,6 +481,7 @@ function NewProject() {
       </main>
     );
   }
+
   return (
     <main className="form-page">
       <div className="form-wrap">
@@ -511,6 +547,9 @@ function NewProject() {
     </main>
   );
 }
+
+/* ---------- Sign up / log in page ---------- */
+
 function AuthPage({ login = false }) {
   const navigate = useNavigate();
   const { signUp, logIn } = useAuth();
@@ -518,6 +557,7 @@ function AuthPage({ login = false }) {
   const [emailInUse, setEmailInUse] = useState(false);
   const [authError, setAuthError] = useState("");
   const [signupNotice, setSignupNotice] = useState("");
+
   const showAuthError = (error) => {
     const message = error?.message || "Something went wrong. Please try again.";
     const accountMissing =
@@ -532,11 +572,13 @@ function AuthPage({ login = false }) {
         : message,
     );
   };
+
   const action = async (e) => {
     e.preventDefault();
     setEmailInUse(false);
     setAuthError("");
     setSignupNotice("");
+
     let result;
     try {
       result = login
@@ -546,6 +588,7 @@ function AuthPage({ login = false }) {
       showAuthError(error);
       return;
     }
+
     const { data, error } = result;
     if (error) {
       if (
@@ -580,6 +623,7 @@ function AuthPage({ login = false }) {
 
     navigate("/projects");
   };
+
   return (
     <main className="auth-page">
       <div className="auth-decoration">✦</div>
@@ -641,18 +685,9 @@ function AuthPage({ login = false }) {
     </main>
   );
 }
-function Footer() {
-  return (
-    <footer className="footer">
-      <Link className="brand" to="/">
-        <span className="brand-mark">H</span>
-        <span>HLSS HACKATHON</span>
-      </Link>
-      <p></p>
-      <span>2026</span>
-    </footer>
-  );
-}
+
+/* ---------- App ---------- */
+
 function App() {
   const [user, setUser] = useState(null);
 
@@ -690,4 +725,5 @@ function App() {
     </AuthContext.Provider>
   );
 }
+
 createRoot(document.getElementById("root")).render(<App />);

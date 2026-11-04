@@ -1,3 +1,4 @@
+/* ---------- Theme colors ---------- */
 :root {
   --ink: #152238;
   --paper: #f8fafc;
@@ -7,6 +8,8 @@
   --muted: #64748b;
   --line: #dbe4ef;
 }
+
+/* ---------- Nav & buttons ---------- */
 .nav {
   background: #101a2d;
   border-bottom: 1px solid #ffffff1c;
@@ -15,6 +18,8 @@
 .button {
   border-radius: 8px;
 }
+
+/* ---------- Hero ---------- */
 .hero {
   background: #101a2d;
 }
@@ -41,6 +46,8 @@
   mask-image: none;
   opacity: 0.8;
 }
+
+/* ---------- Final call-to-action ---------- */
 .final-cta {
   background: #101a2d;
 }
@@ -63,9 +70,18 @@
 .star {
   font-size: 78px;
 }
+
+/* ---------- Prizes & modal icon ---------- */
 .prize-icon,
 .danger-icon {
   border-radius: 10px;
+}
+
+/* ---------- Project cards ---------- */
+.card-art {
+  position: relative;
+  overflow: hidden;
+  background: #1c2d49;
 }
 .project-card:nth-child(3n) .card-art {
   background: #e2ebff;
@@ -75,8 +91,16 @@
   background: #dff7f0;
   color: #176b59;
 }
-.card-art {
-  background: #1c2d49;
+/* Cards with a picture get a neutral background (must stay after the two rules above) */
+.project-card .card-art:has(.card-image) {
+  background: #f1f1f1;
+}
+.card-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 .card-scribble {
   width: 125px;
@@ -91,6 +115,56 @@
 .new-card:hover {
   background: #e7fff9;
 }
+
+/* ---------- Review status: pending & rejected ---------- */
+.project-card.pending,
+.project-card.rejected {
+  position: relative;
+}
+.project-card.pending::after,
+.project-card.rejected::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 1;
+}
+.project-card.pending::after {
+  background: rgba(0, 0, 0, 0.45);
+}
+.project-card.rejected::after {
+  background: rgba(190, 30, 30, 0.4);
+}
+.project-card .review {
+  z-index: 2;
+}
+.rejected-tag {
+  background: #fff;
+  color: #8a1c1c;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 190px;
+  top: 40px;
+  right: -42px;
+  padding: 9px 10px;
+  border: 1px solid #f0caca;
+  box-shadow: 0 2px 8px #0002;
+}
+.rejected-tag span {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.6px;
+}
+.rejected-tag small {
+  font: 8px/1.35 var(--mono);
+  letter-spacing: 0.2px;
+  text-transform: none;
+}
+
+/* ---------- Form & auth pages ---------- */
 .form-page,
 .auth-page {
   background: #edf3f9;
@@ -104,6 +178,8 @@
 .auth-card {
   box-shadow: 12px 12px 0 #cddaff;
 }
+
+/* ---------- Footer ---------- */
 .footer {
   min-height: 94px;
   padding: 20px 5.5vw;
@@ -127,9 +203,6 @@
 .footer p {
   margin: 0 auto;
 }
-.footer strong {
-  color: var(--ink);
-}
 .footer > span {
   font: 10px var(--mono);
   color: #94a3b8;
@@ -147,75 +220,4 @@
   .footer > span {
     display: none;
   }
-}
-
-.project-card.pending,
-.project-card.rejected {
-  position: relative;
-}
-
-.card-art {
-  position: relative;
-  overflow: hidden;
-}
-
-.project-card .card-art:has(.card-image) {
-  background: #f1f1f1;
-}
-
-.card-image {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
-
-.project-card.pending::after,
-.project-card.rejected::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  pointer-events: none;
-  z-index: 1;
-}
-
-.project-card.pending::after {
-  background: rgba(0, 0, 0, 0.45);
-}
-
-.project-card.rejected::after {
-  background: rgba(190, 30, 30, 0.4);
-}
-
-.project-card .review {
-  z-index: 2;
-}
-
-.rejected-tag {
-  background: #fff;
-  color: #8a1c1c;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  width: 190px;
-  top: 40px;
-  right: -42px;
-  padding: 9px 10px;
-  border: 1px solid #f0caca;
-  box-shadow: 0 2px 8px #0002;
-}
-
-.rejected-tag span {
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.6px;
-}
-
-.rejected-tag small {
-  font: 8px/1.35 var(--mono);
-  letter-spacing: 0.2px;
-  text-transform: none;
 }
