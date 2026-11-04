@@ -1,2 +1,150 @@
-:root{--ink:#152238;--paper:#f8fafc;--acid:#54d6b9;--lav:#dce8ff;--pink:#edf4ff;--muted:#64748b;--line:#dbe4ef}.nav{background:#101a2d;border-bottom:1px solid #ffffff1c}.brand-mark,.button{border-radius:8px}.hero{background:#101a2d}.orb{display:none}.hero:after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,transparent 49.7%,#54d6b9 50%,transparent 50.3%);background-size:300px 300px;opacity:.08}.hero>*:not(.orb):not(.grid-bg){z-index:1}.grid-bg{mask-image:none;opacity:.8}.final-cta{background:#101a2d}.final-cta:before{inset:0;width:auto;height:auto;border-radius:0;filter:none;opacity:1;transform:none;background:linear-gradient(135deg,transparent 49.7%,#54d6b9 50%,transparent 50.3%);background-size:300px 300px}.star{font-size:78px}.prize-icon,.danger-icon{border-radius:10px}.project-card:nth-child(3n) .card-art{background:#e2ebff;color:#2d4f93}.project-card:nth-child(3n+1) .card-art{background:#dff7f0;color:#176b59}.card-art{background:#1c2d49}.card-scribble{width:125px;height:125px;border-radius:0;transform:rotate(45deg)}.new-card{background:#fff;border-color:#aebccd}.new-card:hover{background:#e7fff9}.form-page,.auth-page{background:#edf3f9}.auth-decoration{color:#dce8ff}.form-banner{background:#dce8ff}.auth-card{box-shadow:12px 12px 0 #cddaff}.footer{min-height:94px;padding:20px 5.5vw;background:#fff;border-top:1px solid var(--line);display:flex;align-items:center;gap:24px;color:#64748b;font-size:12px}.footer .brand{color:var(--ink);font-size:13px}.footer .brand-mark{width:25px;height:25px;font-size:17px}.footer p{margin:0 auto}.footer strong{color:var(--ink)}.footer>span{font:10px var(--mono);color:#94a3b8}@media(max-width:720px){.footer{flex-wrap:wrap;justify-content:center}.footer p{width:100%;text-align:center;order:3}.footer>span{display:none}}
-
+:root {
+  --ink: #152238;
+  --paper: #f8fafc;
+  --acid: #54d6b9;
+  --lav: #dce8ff;
+  --pink: #edf4ff;
+  --muted: #64748b;
+  --line: #dbe4ef;
+}
+.nav {
+  background: #101a2d;
+  border-bottom: 1px solid #ffffff1c;
+}
+.brand-mark,
+.button {
+  border-radius: 8px;
+}
+.hero {
+  background: #101a2d;
+}
+.orb {
+  display: none;
+}
+.hero:after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    transparent 49.7%,
+    #54d6b9 50%,
+    transparent 50.3%
+  );
+  background-size: 300px 300px;
+  opacity: 0.08;
+}
+.hero > *:not(.orb):not(.grid-bg) {
+  z-index: 1;
+}
+.grid-bg {
+  mask-image: none;
+  opacity: 0.8;
+}
+.final-cta {
+  background: #101a2d;
+}
+.final-cta:before {
+  inset: 0;
+  width: auto;
+  height: auto;
+  border-radius: 0;
+  filter: none;
+  opacity: 1;
+  transform: none;
+  background: linear-gradient(
+    135deg,
+    transparent 49.7%,
+    #54d6b9 50%,
+    transparent 50.3%
+  );
+  background-size: 300px 300px;
+}
+.star {
+  font-size: 78px;
+}
+.prize-icon,
+.danger-icon {
+  border-radius: 10px;
+}
+.project-card:nth-child(3n) .card-art {
+  background: #e2ebff;
+  color: #2d4f93;
+}
+.project-card:nth-child(3n + 1) .card-art {
+  background: #dff7f0;
+  color: #176b59;
+}
+.card-art {
+  background: #1c2d49;
+}
+.card-scribble {
+  width: 125px;
+  height: 125px;
+  border-radius: 0;
+  transform: rotate(45deg);
+}
+.new-card {
+  background: #fff;
+  border-color: #aebccd;
+}
+.new-card:hover {
+  background: #e7fff9;
+}
+.form-page,
+.auth-page {
+  background: #edf3f9;
+}
+.auth-decoration {
+  color: #dce8ff;
+}
+.form-banner {
+  background: #dce8ff;
+}
+.auth-card {
+  box-shadow: 12px 12px 0 #cddaff;
+}
+.footer {
+  min-height: 94px;
+  padding: 20px 5.5vw;
+  background: #fff;
+  border-top: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  color: #64748b;
+  font-size: 12px;
+}
+.footer .brand {
+  color: var(--ink);
+  font-size: 13px;
+}
+.footer .brand-mark {
+  width: 25px;
+  height: 25px;
+  font-size: 17px;
+}
+.footer p {
+  margin: 0 auto;
+}
+.footer strong {
+  color: var(--ink);
+}
+.footer > span {
+  font: 10px var(--mono);
+  color: #94a3b8;
+}
+@media (max-width: 720px) {
+  .footer {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .footer p {
+    width: 100%;
+    text-align: center;
+    order: 3;
+  }
+  .footer > span {
+    display: none;
+  }
+}
