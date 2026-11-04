@@ -115,6 +115,12 @@ a {
   background: transparent;
   border: 1px solid currentColor;
 }
+.button.logout-button {
+  background: var(--acid);
+  border: 1px solid var(--acid);
+  color: var(--ink);
+  font-weight: 700;
+}
 .menu {
   display: none;
   background: none;
@@ -677,6 +683,22 @@ a {
 .form-wrap form {
   padding: 46px 58px 55px;
 }
+.submit-gate {
+  padding: 2rem;
+}
+.submit-gate h1,
+.submit-gate-description {
+  text-align: center;
+}
+.submit-gate-description {
+  color: #68666b;
+  margin: 0 0 1rem;
+}
+.submit-gate > .button {
+  display: flex;
+  width: fit-content;
+  margin: 0 auto;
+}
 .form-wrap h1,
 .auth-card h1 {
   font-size: 54px;
@@ -758,11 +780,26 @@ textarea {
   color: #66646a;
   margin: 0 0 28px;
 }
+.auth-card > p.auth-error:not(.eyebrow):not(.auth-switch) {
+  color: #c62828;
+  font-size: 13px;
+  line-height: 1.4;
+  margin: 0 0 12px;
+}
+.auth-card > p.auth-notice:not(.eyebrow):not(.auth-switch) {
+  color: #287a3e;
+  font-size: 13px;
+  line-height: 1.4;
+  margin: 0 0 12px;
+}
 .auth-switch {
   text-align: center;
   margin: 21px 0 0;
   font-size: 13px;
   color: #706e72;
+}
+.submit-gate .auth-switch {
+  text-align: center;
 }
 .auth-switch a {
   text-decoration: underline;

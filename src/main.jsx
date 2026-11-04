@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useState, useEffect } from "react";
 import { createRoot } from "react-dom/client";
 import {
   BrowserRouter,
@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import "./styles.css";
 import "./modern.css";
+import { supabase } from "./supabaseClient";
 import { mockProjects } from "./mockProjects";
 import trophyImg from "./assets/snoopy_trophy.jpg";
 import creativeImg from "./assets/snoopy_creative.jpg";
@@ -59,7 +60,7 @@ function Navbar() {
         {user ? (
           <>
             <span className="email">{user.email}</span>
-            <button className="button ghost" onClick={logOut}>
+            <button className="button logout-button" onClick={logOut}>
               Log out
             </button>
           </>
@@ -305,6 +306,7 @@ function DeleteModal({ project, close }) {
 
 function NewProject() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [form, setForm] = useState({
     name: "",
     author: "",
@@ -312,11 +314,44 @@ function NewProject() {
     link: "",
     image: null,
   });
-  const submit = (e) => {
+  const submit = async (e) => {
     e.preventDefault();
-    console.log(form);
+    const { error } = await supabase.from("projects").insert({
+      project_name: form.name,
+      creator_name: form.author,
+      description: form.description,
+      project_link: form.link,
+    });
+    if (error) {
+      console.error(error);
+      alert("Something went wrong. Please try again.");
+      return;
+    }
     navigate("/projects");
   };
+  if (!user) {
+    return (
+      <main className="form-page">
+        <div className="form-wrap">
+          <div className="form-banner">
+            <span>NEW PROJECT</span>
+          </div>
+          <div className="submit-gate">
+            <h1>Sign up to submit</h1>
+            <p className="submit-gate-description">
+              You need an account to submit a project.
+            </p>
+            <Link className="button large" to="/signup">
+              Sign up <ArrowUpRight />
+            </Link>
+            <p className="auth-switch">
+              Already have an account? <Link to="/login">Log in</Link>
+            </p>
+          </div>
+        </div>
+      </main>
+    );
+  }
   return (
     <main className="form-page">
       <div className="form-wrap">
@@ -384,10 +419,57 @@ function NewProject() {
 }
 function AuthPage({ login = false }) {
   const navigate = useNavigate();
+  const { signUp, logIn } = useAuth();
   const [form, setForm] = useState({ email: "", password: "" });
-  const action = (e) => {
+  const [emailInUse, setEmailInUse] = useState(false);
+  const [authError, setAuthError] = useState("");
+  const [signupNotice, setSignupNotice] = useState("");
+  const action = async (e) => {
     e.preventDefault();
-    console.log(form);
+    setEmailInUse(false);
+    setAuthError("");
+    setSignupNotice("");
+    let result;
+    try {
+      result = login
+        ? await logIn(form.email, form.password)
+        : await signUp(form.email, form.password);
+    } catch (error) {
+      setAuthError(error?.message || "Something went wrong. Please try again.");
+      return;
+    }
+    const { data, error } = result;
+    if (error) {
+      if (
+        !login &&
+        (error.code === "user_already_exists" ||
+          /already (registered|in use|exists)/i.test(error.message))
+      ) {
+        setEmailInUse(true);
+        return;
+      }
+      setAuthError(error.message || "Something went wrong. Please try again.");
+      return;
+    }
+
+    if (!login && data?.user?.identities?.length === 0) {
+      setEmailInUse(true);
+      return;
+    }
+
+    if (!data?.session) {
+      if (!login && data?.user) {
+        setSignupNotice(
+          "Account created! Check your email to confirm it before logging in.",
+        );
+      } else {
+        setAuthError(
+          "We couldn't complete that. Please check your details and try again.",
+        );
+      }
+      return;
+    }
+
     navigate("/projects");
   };
   return (
@@ -396,6 +478,18 @@ function AuthPage({ login = false }) {
       <form className="auth-card" onSubmit={action}>
         <h1>{login ? "Log in" : "Sign up"}</h1>
         <p>{login ? "Hi again! （-＾▽＾-）" : "(ᵔ◡ᵔ) Woohoo!"}</p>
+        {(authError || (!login && emailInUse)) && (
+          <p className="auth-error" role="alert">
+            {authError
+              ? `${authError} 😡`
+              : "This email is already in use. Please log in or use another email. 😡"}
+          </p>
+        )}
+        {!login && signupNotice && (
+          <p className="auth-notice" role="status">
+            {signupNotice}
+          </p>
+        )}
         <label>
           Email
           <input
@@ -405,7 +499,12 @@ function AuthPage({ login = false }) {
               login ? "you@example.com" : "School (preferably) or personal"
             }
             value={form.email}
-            onChange={(e) => setForm({ ...form, email: e.target.value })}
+            onChange={(e) => {
+              setEmailInUse(false);
+              setAuthError("");
+              setSignupNotice("");
+              setForm({ ...form, email: e.target.value });
+            }}
           />
         </label>
         <label>
@@ -415,7 +514,10 @@ function AuthPage({ login = false }) {
             required
             placeholder="••••••••"
             value={form.password}
-            onChange={(e) => setForm({ ...form, password: e.target.value })}
+            onChange={(e) => {
+              setAuthError("");
+              setForm({ ...form, password: e.target.value });
+            }}
           />
         </label>
         <button className="button large submit">
@@ -444,15 +546,27 @@ function Footer() {
   );
 }
 function App() {
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => {
+      setUser(data.session?.user ?? null);
+    });
+    const { data: listener } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        setUser(session?.user ?? null);
+      },
+    );
+    return () => listener.subscription.unsubscribe();
+  }, []);
+
+  const signUp = (email, password) => supabase.auth.signUp({ email, password });
+  const logIn = (email, password) =>
+    supabase.auth.signInWithPassword({ email, password });
+  const logOut = () => supabase.auth.signOut();
+
   return (
-    <AuthContext.Provider
-      value={{
-        user: null,
-        signUp: () => {},
-        logIn: () => {},
-        logOut: () => {},
-      }}
-    >
+    <AuthContext.Provider value={{ user, signUp, logIn, logOut }}>
       <BrowserRouter>
         <Navbar />
         <Routes>
