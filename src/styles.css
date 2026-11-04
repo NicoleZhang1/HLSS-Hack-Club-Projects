@@ -1,4 +1,6 @@
 @import url("https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Playfair+Display:ital,wght@0,500;0,600;1,500;1,600&display=swap");
+
+/* ---------- Base ---------- */
 :root {
   --ink: #101014;
   --paper: #f7f5ef;
@@ -27,6 +29,8 @@ a {
   text-decoration: none;
   color: inherit;
 }
+
+/* ---------- Nav ---------- */
 .nav {
   height: 76px;
   position: absolute;
@@ -45,9 +49,6 @@ a {
   gap: 9px;
   font-weight: 700;
   letter-spacing: -0.7px;
-}
-.brand span span {
-  color: var(--acid);
 }
 .brand-mark {
   width: 30px;
@@ -84,6 +85,18 @@ a {
 .text-link {
   font-size: 14px;
 }
+.email {
+  font-size: 12px;
+  color: #cac9cc;
+}
+.menu {
+  display: none;
+  background: none;
+  border: 0;
+  color: #fff;
+}
+
+/* ---------- Buttons ---------- */
 .button {
   border: 0;
   display: inline-flex;
@@ -121,12 +134,33 @@ a {
   color: var(--ink);
   font-weight: 700;
 }
-.menu {
-  display: none;
-  background: none;
-  border: 0;
-  color: #fff;
+.button.light {
+  background: white;
 }
+.button.danger {
+  background: #d83d3d;
+  color: white;
+}
+
+/* ---------- Big headings (shared) ---------- */
+.hero h1,
+.page-intro h1,
+.form-wrap h1,
+.auth-card h1,
+.final-cta h2 {
+  font-size: clamp(53px, 7.3vw, 104px);
+  letter-spacing: -5.5px;
+  line-height: 0.9;
+  margin: 0;
+  font-weight: 600;
+}
+.hero h1 em,
+.final-cta em {
+  font-family: var(--serif);
+  font-weight: 500;
+}
+
+/* ---------- Hero ---------- */
 .hero {
   height: min(750px, 100vh);
   min-height: 610px;
@@ -179,39 +213,6 @@ a {
 .hero > *:not(.orb):not(.grid-bg) {
   position: relative;
 }
-.eyebrow {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 7px;
-  font: 500 11px var(--mono);
-  letter-spacing: 1.25px;
-  margin: 0 0 18px;
-  color: var(--acid);
-}
-.eyebrow.dark {
-  color: #626168;
-  justify-content: flex-start;
-}
-.hero h1,
-.page-intro h1,
-.form-wrap h1,
-.auth-card h1,
-.final-cta h2 {
-  font-size: clamp(53px, 7.3vw, 104px);
-  letter-spacing: -5.5px;
-  line-height: 0.9;
-  margin: 0;
-  font-weight: 600;
-}
-.hero h1 em,
-.page-intro i,
-.form-wrap i,
-.auth-card i,
-.final-cta em {
-  font-family: var(--serif);
-  font-weight: 500;
-}
 .hero-copy {
   max-width: 475px;
   line-height: 1.55;
@@ -247,39 +248,11 @@ a {
     transform: translateY(7px);
   }
 }
+
+/* ---------- Prizes & info ---------- */
 .prizes {
   padding: 120px 7vw 105px;
   background: var(--paper);
-}
-.info-section {
-  background: #e9e5dc;
-}
-.info-section .section-head {
-  max-width: 760px;
-}
-.info-section .info-list,
-.info-section .info-contact {
-  color: #3e3d3a;
-  font-size: clamp(17px, 1.7vw, 21px);
-  line-height: 1.45;
-}
-.info-section .info-list {
-  margin: 22px 0 0;
-  padding-left: 1.3em;
-}
-.info-section .info-list li + li {
-  margin-top: 10px;
-}
-.info-section .info-contact {
-  margin-top: 24px;
-}
-.info-section .info-contact a {
-  font-weight: 600;
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
-.info-section .info-emails {
-  white-space: nowrap;
 }
 .section-head {
   max-width: 620px;
@@ -289,10 +262,6 @@ a {
   letter-spacing: -3.3px;
   line-height: 0.95;
   margin: 0;
-}
-.section-head h2 i {
-  font-family: var(--serif);
-  font-weight: 500;
 }
 .section-head > p:last-child {
   color: var(--muted);
@@ -359,6 +328,38 @@ a {
   color: #287a3e;
   font: 12px var(--mono);
 }
+.info-section {
+  background: #e9e5dc;
+}
+.info-section .section-head {
+  max-width: 760px;
+}
+.info-section .info-list,
+.info-section .info-contact {
+  color: #3e3d3a;
+  font-size: clamp(17px, 1.7vw, 21px);
+  line-height: 1.45;
+}
+.info-section .info-list {
+  margin: 22px 0 0;
+  padding-left: 1.3em;
+}
+.info-section .info-list li + li {
+  margin-top: 10px;
+}
+.info-section .info-contact {
+  margin-top: 24px;
+}
+.info-section .info-contact a {
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.info-section .info-emails {
+  white-space: nowrap;
+}
+
+/* ---------- Final call-to-action ---------- */
 .final-cta {
   background: #111116;
   color: #fff;
@@ -383,6 +384,10 @@ a {
 .final-cta > * {
   position: relative;
 }
+.final-cta h2 {
+  font-size: clamp(45px, 6.5vw, 82px);
+  margin-bottom: 32px;
+}
 .star {
   font-size: 110px;
   color: var(--acid);
@@ -395,13 +400,6 @@ a {
     transform: rotate(360deg);
   }
 }
-.final-cta h2 {
-  font-size: clamp(45px, 6.5vw, 82px);
-  margin-bottom: 32px;
-}
-.button.light {
-  background: white;
-}
 .login-under {
   display: block;
   margin-top: 18px;
@@ -409,6 +407,8 @@ a {
   text-decoration: underline;
   color: #c8c8cc;
 }
+
+/* ---------- Projects page ---------- */
 .page {
   min-height: 100vh;
   padding: 150px 7vw 100px;
@@ -484,6 +484,14 @@ a {
   gap: 19px;
   margin-top: 28px;
 }
+.project-edit-note {
+  color: #68666b;
+  font-size: 12px;
+  line-height: 1.5;
+  margin: 18px 0 0;
+}
+
+/* ---------- Project cards ---------- */
 .new-card {
   min-height: 357px;
   border: 1px dashed #aaa8a2;
@@ -602,6 +610,8 @@ a {
 .pending {
   filter: saturate(0.55);
 }
+
+/* ---------- Delete modal ---------- */
 .modal-backdrop {
   position: fixed;
   z-index: 30;
@@ -654,10 +664,8 @@ a {
   gap: 10px;
   margin-top: 25px;
 }
-.button.danger {
-  background: #d83d3d;
-  color: white;
-}
+
+/* ---------- Forms (submit project & auth) ---------- */
 .form-page,
 .auth-page {
   min-height: 100vh;
@@ -683,6 +691,15 @@ a {
 .form-wrap form {
   padding: 46px 58px 55px;
 }
+.form-wrap h1,
+.auth-card h1 {
+  font-size: 54px;
+  line-height: 0.95;
+  margin: 0 0 14px;
+}
+.form-wrap h1 {
+  letter-spacing: 0.02em;
+}
 .submit-gate {
   padding: 2rem;
 }
@@ -698,27 +715,6 @@ a {
   display: flex;
   width: fit-content;
   margin: 0 auto;
-}
-.form-wrap h1,
-.auth-card h1 {
-  font-size: 54px;
-  line-height: 0.95;
-  margin: 0 0 14px;
-}
-.form-wrap h1 {
-  letter-spacing: 0.02em;
-}
-.form-note {
-  line-height: 1.5;
-  color: #68666b;
-  max-width: 350px;
-  margin: 0 0 33px;
-}
-.project-edit-note {
-  color: #68666b;
-  font-size: 12px;
-  line-height: 1.5;
-  margin: 18px 0 0;
 }
 label {
   display: block;
@@ -755,6 +751,8 @@ textarea {
   width: 100%;
   margin-top: 29px;
 }
+
+/* ---------- Auth pages ---------- */
 .auth-page {
   display: grid;
   place-items: center;
@@ -782,17 +780,17 @@ textarea {
   margin-top: 2px;
   letter-spacing: 0.02em;
 }
-.auth-card > p:not(.eyebrow):not(.auth-switch) {
+.auth-card > p:not(.auth-switch) {
   color: #66646a;
   margin: 0 0 28px;
 }
-.auth-card > p.auth-error:not(.eyebrow):not(.auth-switch) {
+.auth-card > p.auth-error:not(.auth-switch) {
   color: #c62828;
   font-size: 13px;
   line-height: 1.4;
   margin: 0 0 12px;
 }
-.auth-card > p.auth-notice:not(.eyebrow):not(.auth-switch) {
+.auth-card > p.auth-notice:not(.auth-switch) {
   color: #287a3e;
   font-size: 13px;
   line-height: 1.4;
@@ -804,23 +802,13 @@ textarea {
   font-size: 13px;
   color: #706e72;
 }
-.submit-gate .auth-switch {
-  text-align: center;
-}
 .auth-switch a {
   text-decoration: underline;
   color: var(--ink);
   font-weight: 600;
 }
-.email {
-  font-size: 12px;
-  color: #cac9cc;
-}
-.nav:has(+ *) {
-}
-.projects-page ~ * .nav {
-  color: var(--ink);
-}
+
+/* ---------- Mobile ---------- */
 @media (max-width: 720px) {
   .nav {
     padding: 0 22px;
@@ -849,11 +837,21 @@ textarea {
   .nav-actions .text-link {
     display: none;
   }
+  .nav-actions .email {
+    display: none;
+  }
   .button.small {
     padding: 9px 12px;
   }
   .hero h1 {
     letter-spacing: -3px;
+  }
+  .hero-actions {
+    flex-direction: column;
+    gap: 17px;
+  }
+  .scroll {
+    display: none;
   }
   .prizes {
     padding: 80px 24px;
@@ -880,25 +878,12 @@ textarea {
   .form-wrap form {
     padding: 35px 24px;
   }
-  .form-wrap h1 {
-    font-size: 43px;
-    letter-spacing: 0.02em;
-  }
+  .form-wrap h1,
   .auth-card h1 {
     font-size: 43px;
     letter-spacing: 0.02em;
   }
   .auth-card {
     padding: 36px 25px;
-  }
-  .hero-actions {
-    flex-direction: column;
-    gap: 17px;
-  }
-  .scroll {
-    display: none;
-  }
-  .nav-actions .email {
-    display: none;
   }
 }
