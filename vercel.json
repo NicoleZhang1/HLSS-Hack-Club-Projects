@@ -1,3 +1,9 @@
 {
-  "rewrites": [{ "source": "/(.*)", "destination": "/" }]
+  "rewrites": [
+    {
+      "source": "/supabase/:path*",
+      "destination": "https://xdmwbnmqkrptiomfnsox.supabase.co/:path*"
+    },
+    { "source": "/(.*)", "destination": "/" }
+  ]
 }
